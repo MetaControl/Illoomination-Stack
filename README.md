@@ -6,7 +6,8 @@
 
 This guide outlines the development of a multi-VPS solution, integrating **Medusa** for backend eCommerce management and **Nuxt.js + UI Pro** for the frontend that is easily scalable. Intended key features include a dynamic product assembly system, optimized caching, geolocation-based pricing, custom discount structures, membership, and gamification systems. A video tutorial for the setup process is planned to go along with this guide. This guide also serves as development documentation.
 
-## Required Skill Level: **None** - This guide is meant to be comprehensive and easy enough for anyone to follow. My own skill level is that of a beginner at the start of this journey.
+## Required Skill Level: **None** 
+This guide is meant to be comprehensive and easy enough for anyone to follow. My own skill level is that of a beginner at the start of this journey.
 
 Tip: Whenever you feel like it is a bit too much to understand, just keep following the step-by-step instructions. If you encounter any errors, make sure you backtrack, use the development documentation, and compare all your actions to the plan. I also recommend you keep a development checklist for yourself so you can mark your own progress and always have an overview of where you are throughout the process.
 
