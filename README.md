@@ -372,6 +372,23 @@ To ensure a smooth scaling experience and a robust infrastructure, the following
 - **CDN & Security**: Cloudflare (Free Plan)
 - **Database**: Managed PostgreSQL (basic setup for cost-efficiency)
 
+**Performance Metrics**
+- **API Response Time**: ~400-600ms
+- **Time to First Byte (TTFB)**: ~300-500ms
+- **Full Page Load**: ~2-3 seconds
+- **Product Variation Load**: ~500-800ms
+- **Concurrent Users**: ~50-100 users
+
+**Suggested Enhancements**
+- **Edge Caching**: Utilize Cloudflare's edge caching capabilities for static assets and even full HTML pages where possible. *(No additional cost on Free Plan)*
+  - **Potential Gain**: Reduce TTFB by ~50-100ms and improve overall page load time by ~10-20%.
+- **Nuxt.js Static Generation (SSG)**: Pre-build pages that do not change often to serve them instantly. *(No additional cost)*
+  - **Potential Gain**: Reduce full page load time by ~20-40% for pre-generated pages.
+- **Image Optimization**: Serve next-gen image formats like WebP and use lazy-loading for images not immediately visible. *(Potential cost if using dedicated image optimization service)*
+  - **Potential Gain**: Reduce full page load time by ~10-30%, particularly on media-heavy pages.
+- **Reduce Third-Party Dependencies**: Minimize external scripts and resources to reduce payload size and speed up load time. *(No additional cost)*
+  - **Potential Gain**: Improve overall page load time by ~10-20% depending on the number of external resources.
+
 ### 2. Intermediate Setup - 1,000-3,000 Sales/Month
 
 **Server Architecture**
@@ -390,6 +407,25 @@ To ensure a smooth scaling experience and a robust infrastructure, the following
 - **Mail & Notifications**: Postal, Mautic (More frequent emailing)
 - **CDN & Security**: Cloudflare (Pro Plan for added security and performance)
 - **Database**: Managed PostgreSQL (upgraded for higher traffic handling)
+
+**Performance Metrics**
+- **API Response Time**: ~300-500ms
+- **Time to First Byte (TTFB)**: ~200-400ms
+- **Full Page Load**: ~1.5-2.5 seconds
+- **Product Variation Load**: ~400-600ms
+- **Concurrent Users**: ~200-300 users
+
+**Suggested Enhancements**
+- **Dedicated Load Balancer**: Implement a dedicated load balancer to distribute traffic more effectively and reduce server load. *(Estimated cost: $10-$20/month)*
+  - **Potential Gain**: Improve server response times by ~20-30%, reduce downtime risk under high traffic.
+- **HTTP/3 Implementation**: Upgrade Cloudflare to support HTTP/3 for better response time, especially in high-latency scenarios. *(Cost included in Cloudflare Pro Plan: $20/month)*
+  - **Potential Gain**: Reduce TTFB by ~20-40ms and improve connection stability.
+- **Code Splitting in Nuxt.js**: Use code splitting to ensure only required JavaScript modules are loaded per page. *(No additional cost)*
+  - **Potential Gain**: Reduce full page load time by ~10-20%.
+- **Advanced Cache Rules**: Use Cloudflare Pro Plan’s advanced cache rules to optimize caching behavior. *(Cost included in Cloudflare Pro Plan: $20/month)*
+  - **Potential Gain**: Reduce server load and improve page load times by ~10-15%.
+- **Connection Pooling**: Use a connection pooling service like PgBouncer to handle frequent database connections more efficiently. *(Potential cost: $10-$15/month)*
+  - **Potential Gain**: Improve database query performance by ~15-25%.
 
 ### 3. High Availability Setup - 3,000+ Sales/Month
 
@@ -415,4 +451,23 @@ To ensure a smooth scaling experience and a robust infrastructure, the following
 - **CDN & Security**: Cloudflare (Business Plan for better caching, advanced security, and failover management)
 - **Database**: High-Performance Managed PostgreSQL with enhanced scaling and availability
 - **Backup**: AWS S3 or Backblaze, Automated Snapshot Backups
+
+**Performance Metrics**
+- **API Response Time**: ~200-400ms
+- **Time to First Byte (TTFB)**: ~150-300ms
+- **Full Page Load**: ~1-2 seconds
+- **Product Variation Load**: ~200-400ms
+- **Concurrent Users**: ~500-1,000 users
+
+**Suggested Enhancements**
+- **Vercel Edge Functions**: Use Vercel Edge Functions to execute custom logic closer to the end-user, reducing latency. *(Additional cost included in Vercel Team Plan: $50/month)*
+  - **Potential Gain**: Reduce API response time by ~15-25% by running functions closer to the user.
+- **Argo Smart Routing**: Use Cloudflare Argo for optimal routing and reduced latency globally. *(Usage-based fee, estimated $10-$50/month depending on traffic)*
+  - **Potential Gain**: Reduce TTFB by ~20-30% through optimized routing.
+- **Read Replicas and Database Partitioning**: Introduce read replicas and database partitioning for optimized database performance. *(Additional cost: $20-$50/month)*
+  - **Potential Gain**: Improve read query performance by ~30-40% and increase availability.
+- **Kubernetes Cluster Management**: Use managed Kubernetes to ensure seamless scaling and reduce manual load handling. *(Estimated cost: $50-$80/month)*
+  - **Potential Gain**: Enhance reliability and scalability, reducing manual intervention by ~40-50%.
+- **High-Performance Image Optimization**: Use a dedicated image CDN or service for resizing and optimization to reduce image load times further. *(Usage-based fee, estimated $10-$30/month)*
+  - **Potential Gain**: Reduce image load times by ~20-30%, leading to improved overall page load times.
 
