@@ -1,26 +1,28 @@
 # Project Development Guidebook
 
 ## Overview
-This project consists of a dual VPS setup for a highly performant, headless eCommerce store. We utilize **Medusa** as the backend eCommerce engine and **WordPress with Bricks Builder** for the frontend. The project includes a dynamic product assembly system, tiered caching, and membership gamification. Key features include custom discount structures, geolocation-based pricing, and a sophisticated image processing workflow.
+This project consists of a Kubernetes (K8s) setup for a highly performant, headless eCommerce store. We utilize **Medusa** as the backend eCommerce engine and **Nuxt.js with Nuxt UI Pro** for the frontend. The project includes a dynamic product assembly system, tiered caching, and membership gamification. Key features include custom discount structures, geolocation-based pricing, and a sophisticated image processing workflow.
 
 ---
 
 ## Tech Stack Breakdown
 
-### **Frontend Stack (VPS 1 - WordPress & Bricks Builder)**:
-- **WordPress**: Acts as the Content Management System (CMS) for pages, blogs, and front-end content.
-- **Bricks Builder**: Visual design builder for creating and managing dynamic pages.
-- **GraphQL**: Facilitates efficient data communication between WordPress (frontend) and Medusa (backend).
-- **Nginx**: Web server for load balancing, caching, and handling requests for both frontend and backend servers.
-- **ImageMagick**: Image processing tool used to dynamically generate web-optimized product images.
+### **Frontend Stack (Nuxt.js & Vercel)**:
+- **Nuxt.js**: Acts as the frontend framework for building a server-side rendered (SSR) and static website.
+- **Nuxt UI Pro**: Provides pre-built, customizable components optimized for eCommerce use.
+- **Vercel**: Hosting for the frontend, providing SSR or SSG deployment options.
+- **GraphQL**: Facilitates efficient data communication between Nuxt.js (frontend) and Medusa (backend).
+- **Cloudflare**: Provides CDN services for static content delivery and enhanced website security.
+- **Thumbor** or **Sharp**: Image processing tools used to dynamically generate web-optimized product images.
 - **Redis**: Caching layer used to store transient data and API responses for faster product and page loads.
-  
-### **Backend Stack (VPS 2 - Medusa)**:
+
+### **Backend Stack (Medusa on Kubernetes)**:
 - **Medusa**: A modular eCommerce backend that manages products, variations, and orders.
 - **Node.js**: Runtime environment for Medusa's API handling and backend services.
-- **PostgreSQL**: The primary database for storing relational data (e.g., products, variants, orders). **MongoDB** can be an alternative for more dynamic storage needs.
-- **Redis**: Serves as the primary cache for product variations, API requests, and data retrieval across both servers.
-- **Nginx**: Manages API routing and reverse proxy operations.
+- **PostgreSQL**: The primary database for storing relational data (e.g., products, variants, orders).
+- **Redis**: Serves as the primary cache for product variations, API requests, and data retrieval across all services.
+- **Kubernetes**: Manages containerized services, including Medusa, ensuring high availability and auto-scaling based on load.
+- **Docker**: Used for containerizing backend services like Medusa, PostgreSQL, and auxiliary tools.
 
 ---
 
@@ -29,11 +31,11 @@ This project consists of a dual VPS setup for a highly performant, headless eCom
 ### 1. **Dynamic Product Assembly**
 - Medusa handles dynamic product variants such as motifs, colors, and sizes.
 - The frontend queries product data from Medusa via **GraphQL**, dynamically displaying combinations without bloating the database.
-- Product images are generated and compressed using **ImageMagick**, with options for motif size and placement.
+- Product images are generated and compressed using **Sharp** or **Thumbor**, with options for motif size and placement.
 
 ### 2. **Geolocation-Based Pricing**
 - Pricing adjusts based on user location (detected via IP), showing either EUR or USD, with real-time currency conversion and localized pricing.
-- Implemented using **GeoIP** services on the frontend, with pricing data pulled from Medusa.
+- Implemented using **GeoIP** services integrated with the frontend, with pricing data pulled from Medusa.
 
 ### 3. **Custom Discount Structure**
 - Discounts are dynamic and stackable:
@@ -64,22 +66,25 @@ This project consists of a dual VPS setup for a highly performant, headless eCom
 
 ## Server Architecture & Setup
 
-### **VPS 1 (Frontend: WordPress & Bricks Builder)**:
-- **vCPU**: 8 Cores
-- **RAM**: 32GB
-- **Storage**: 400GB NVMe
-- **Bandwidth**: 32TB
-- **Redis**: Used for transient caching and product image caching.
-- **Nginx**: For web traffic handling and load balancing.
+### **Kubernetes Cluster (Backend & Frontend Services)**
+- **Cluster Nodes**:
+  - **Nodes**: 2x 1GB RAM nodes ($5/month each) to start, scaling automatically with increased load.
+  - **Horizontal Scaling**: Kubernetes ensures additional nodes are added when traffic spikes.
+  - **Pod Deployment**: Medusa, Nuxt.js, PostgreSQL, Redis, and auxiliary services run as containerized pods.
+- **Managed PostgreSQL Database**: Provisioned for scalability and automatic backups ($15-20/month).
+- **Load Balancer**: Deployed within the Kubernetes cluster to manage traffic efficiently.
 
-### **VPS 2 (Backend: Medusa)**:
-- **vCPU**: 8 Cores
-- **RAM**: 32GB
-- **Storage**: 400GB NVMe
-- **Bandwidth**: 32TB
-- **Redis**: Used for caching API requests and product variations.
-- **PostgreSQL**: Database for storing product, user, and order data.
-- **Nginx**: Manages API requests and acts as a reverse proxy.
+### **Frontend Hosting**
+- **Vercel (Free Plan)**: Hosts the **Nuxt.js** frontend, providing SSR or SSG deployment options.
+- **Edge Functions**: Utilize **Vercel Edge Functions** to run server-side logic closer to the user, enhancing responsiveness.
+
+### **CDN & Security**
+- **Cloudflare Free Plan**: Provides global CDN, SSL/TLS, and DDoS protection.
+- **Advanced Security**: Use **Cloudflare Pro** or **Business Plan** at higher levels of traffic for enhanced security and performance.
+
+### **Auxiliary Services**
+- **Mautic (Email Marketing)**: Deployed within the Kubernetes cluster for automated email marketing campaigns.
+- **Postal (Transactional Emails)**: Handles order confirmations and other transactional communications, also deployed in the Kubernetes environment.
 
 ---
 
@@ -95,32 +100,34 @@ This project consists of a dual VPS setup for a highly performant, headless eCom
 ## DevOps, Monitoring & Maintenance
 
 1. **CI/CD Pipelines**: 
-   - Continuous integration and deployment using tools like Jenkins or GitLab CI.
+   - Continuous integration and deployment using tools like Jenkins, GitLab CI, or GitHub Actions.
    - Automated testing and staging before live deployment.
    
 2. **Monitoring & Alerts**:
-   - **Prometheus** or **Grafana** for server and API monitoring.
+   - **Prometheus** or **Grafana** for cluster and API monitoring.
    - **Custom Alerts**: Alerts for high load, slow queries, and downtime.
 
 3. **Security**:
-   - Implement SSL certificates via **Let's Encrypt**.
-   - Secure Nginx configurations with strict headers.
-   - **Malware Scanner** (part of Hostinger) for periodic checks.
+   - **SSL Certificates** via **Let's Encrypt** managed through Kubernetes Ingress.
+   - Secure Kubernetes pods and services using **Network Policies** and **RBAC** (Role-Based Access Control).
+   - **Container Scanning**: Implement tools such as **Clair** or **Trivy** to scan container images for vulnerabilities.
 
 ---
 
 ## Cost Breakdown
 
-### VPS Hosting:
-- **VPS 1 (WordPress & Bricks Builder)**: €17.99/month (Hostinger VPS)
-- **VPS 2 (Medusa)**: €17.99/month (Hostinger VPS)
-- **Total**: €35.98/month
+### Kubernetes & Hosting:
+- **Kubernetes Nodes**: 2 x 1GB nodes ($5/month each) = $10/month (scales as needed)
+- **Managed PostgreSQL**: $15-20/month
+- **Vercel (Nuxt.js Hosting)**: Free Plan (initially)
+- **Cloudflare (CDN & Security)**: Free Plan (initially)
+- **Total**: $25-30/month (starting cost, scaling with usage)
 
 ### Additional Costs:
-- **Bricks Builder Pro License**: €79/year
+- **Nuxt UI Pro License**: €250 (one-time fee)
 - **Custom Development** (if outsourcing for API integration or advanced features): Varies based on hourly rates.
-  
+
 ---
 
 ## Conclusion
-This project integrates **Medusa** and **WordPress** to create a high-performance, scalable eCommerce solution. It combines dynamic product assembly, optimized caching, advanced pricing mechanisms, and an engaging membership system to provide a seamless shopping experience. The dual VPS setup ensures no single server is overloaded, leading to fast response times and a smooth user experience.
+This project integrates **Medusa** and **Nuxt.js** within a **Kubernetes** architecture to create a highly scalable and resilient eCommerce solution. It combines dynamic product assembly, optimized caching, advanced pricing mechanisms, and an engaging membership system to provide a seamless shopping experience. The Kubernetes-based infrastructure ensures resilience and scalability, allowing for growth as traffic and customer demand increase.
